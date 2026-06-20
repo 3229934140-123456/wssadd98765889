@@ -1,6 +1,22 @@
 import dayjs from 'dayjs';
 import type { Course, Activity, WritingSlot, WarningInfo } from '@/types';
 
+const timeToMinutes = (time: string): number => {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+};
+
+const isOverlap = (
+  s1: string, e1: string,
+  s2: string, e2: string
+): boolean => {
+  const aStart = timeToMinutes(s1);
+  const aEnd = timeToMinutes(e1);
+  const bStart = timeToMinutes(s2);
+  const bEnd = timeToMinutes(e2);
+  return aStart < bEnd && bStart < aEnd;
+};
+
 export const periodToTime = (period: number): { start: string; end: string } => {
   const baseHour = 8;
   const startMinutes = (period - 1) * 90;
@@ -42,51 +58,73 @@ export const calculateSlots = (
   const dayCourses = courses.filter(c => c.dayOfWeek === dayOfWeek).sort((a, b) => a.startPeriod - b.startPeriod);
   const dayActivities = activities.filter(a => a.dayOfWeek === dayOfWeek);
 
+  const busyRanges: Array<{ start: string; end: string }> = [];
+  dayCourses.forEach(c => {
+    const { start: cs, end: ce } = periodToTime(c.startPeriod);
+    const { end: cee } = periodToTime(c.endPeriod);
+    busyRanges.push({ start: cs, end: cee });
+  });
+  dayActivities.forEach(a => {
+    busyRanges.push({ start: a.startTime, end: a.endTime });
+  });
+
+  const hasConflict = (s: string, e: string): boolean => {
+    return busyRanges.some(r => isOverlap(s, e, r.start, r.end));
+  };
+
   const hasMorning = dayCourses.some(c => c.startPeriod <= 2);
   const hasAfternoon = dayCourses.some(c => c.startPeriod >= 3 && c.startPeriod <= 6);
   const hasEvening = dayCourses.some(c => c.startPeriod >= 7);
-  const hasClub = dayActivities.some(a => a.type === 'club');
 
   if (hasMorning && hasAfternoon) {
-    slots.push({
-      id: `slot-${dayOfWeek}-noon`,
-      dayOfWeek,
-      startTime: '12:20',
-      endTime: '13:00',
-      durationMinutes: 40,
-      estimatedWords: Math.round(40 * writingSpeed),
-      label: '午休空档',
-      isSelected: false,
-      type: 'noon',
-    });
+    const s = '12:20', e = '13:00';
+    if (!hasConflict(s, e)) {
+      slots.push({
+        id: `slot-${dayOfWeek}-noon`,
+        dayOfWeek,
+        startTime: s,
+        endTime: e,
+        durationMinutes: 40,
+        estimatedWords: Math.round(40 * writingSpeed),
+        label: '午休空档',
+        isSelected: false,
+        type: 'noon',
+      });
+    }
   }
 
   if (hasAfternoon && !hasEvening) {
-    slots.push({
-      id: `slot-${dayOfWeek}-evening`,
-      dayOfWeek,
-      startTime: '18:00',
-      endTime: '19:30',
-      durationMinutes: 90,
-      estimatedWords: Math.round(90 * writingSpeed),
-      label: '晚饭後',
-      isSelected: false,
-      type: 'evening',
-    });
+    const s = '18:00', e = '19:30';
+    if (!hasConflict(s, e)) {
+      slots.push({
+        id: `slot-${dayOfWeek}-evening`,
+        dayOfWeek,
+        startTime: s,
+        endTime: e,
+        durationMinutes: 90,
+        estimatedWords: Math.round(90 * writingSpeed),
+        label: '晚饭後',
+        isSelected: false,
+        type: 'evening',
+      });
+    }
   }
 
-  if (!hasClub) {
-    slots.push({
-      id: `slot-${dayOfWeek}-night`,
-      dayOfWeek,
-      startTime: '20:30',
-      endTime: '22:00',
-      durationMinutes: 90,
-      estimatedWords: Math.round(90 * writingSpeed),
-      label: '睡前黄金档',
-      isSelected: false,
-      type: 'night',
-    });
+  {
+    const s = '20:30', e = '22:00';
+    if (!hasConflict(s, e)) {
+      slots.push({
+        id: `slot-${dayOfWeek}-night`,
+        dayOfWeek,
+        startTime: s,
+        endTime: e,
+        durationMinutes: 90,
+        estimatedWords: Math.round(90 * writingSpeed),
+        label: '睡前黄金档',
+        isSelected: false,
+        type: 'night',
+      });
+    }
   }
 
   for (let i = 0; i < dayCourses.length - 1; i++) {
@@ -94,10 +132,8 @@ export const calculateSlots = (
     if (gap >= 2) {
       const endTime = periodToTime(dayCourses[i].endPeriod).end;
       const startTime = periodToTime(dayCourses[i + 1].startPeriod).start;
-      const [eh, em] = endTime.split(':').map(Number);
-      const [sh, sm] = startTime.split(':').map(Number);
-      const duration = (sh * 60 + sm) - (eh * 60 + em);
-      if (duration >= 30) {
+      const duration = timeToMinutes(startTime) - timeToMinutes(endTime);
+      if (duration >= 30 && !hasConflict(endTime, startTime)) {
         slots.push({
           id: `slot-${dayOfWeek}-gap-${i}`,
           dayOfWeek,

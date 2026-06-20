@@ -97,6 +97,7 @@ const OnboardingPage: React.FC = () => {
   const handleNext = () => {
     if (step < TOTAL_STEPS) {
       setStep(step + 1);
+      setActiveTab('course');
     } else {
       handleFinish();
     }
@@ -105,6 +106,7 @@ const OnboardingPage: React.FC = () => {
   const handlePrev = () => {
     if (step > 1) {
       setStep(step - 1);
+      setActiveTab('course');
     }
   };
 

@@ -63,6 +63,7 @@
   border-radius: $radius-lg;
   padding: $spacing-lg;
   box-shadow: 0 2rpx 12rpx rgba(45, 90, 123, 0.06);
+  margin-bottom: $spacing-md;
 }
 
 .novelHeader {
@@ -113,13 +114,195 @@
   color: $color-text-tertiary;
 }
 
-.novelMeta {
+.expandHeader {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg $radius-lg 0 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.expandHeaderNoBorder {
+  border-radius: $radius-lg;
+  border-bottom: none;
+}
+
+.expandIconCol {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.expandIcon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-md;
+  background: rgba(45, 90, 123, 0.1);
+  color: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.expandTitleCol {
+  flex: 1;
+}
+
+.expandTitle {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.expandCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.arrow {
+  color: $color-text-tertiary;
+  font-size: $font-size-lg;
+  transition: transform $transition-base;
+}
+
+.arrowExpanded {
+  transform: rotate(90deg);
+}
+
+.expandBody {
+  background: $color-bg-card;
+  border-radius: 0 0 $radius-lg $radius-lg;
+  padding: 0 $spacing-lg $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.editRow {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.editLabel {
   font-size: $font-size-sm;
   color: $color-text-secondary;
-  padding-top: $spacing-md;
-  border-top: 1rpx solid $color-divider;
+  width: 160rpx;
+  flex-shrink: 0;
+}
+
+.editInput {
+  flex: 1;
+  height: 64rpx;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: 0 $spacing-sm;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.editTagGroup {
+  flex: 1;
+  display: flex;
+  gap: $spacing-xs;
+  flex-wrap: wrap;
+}
+
+.editTag {
+  padding: 8rpx 16rpx;
+  border-radius: $radius-button;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  background: $color-bg-page;
+  border: 2rpx solid transparent;
+}
+
+.editTagActive {
+  background: rgba(45, 90, 123, 0.1);
+  color: $color-primary;
+  border-color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.saveBtn {
+  @include button-reset;
+  height: $button-height-md;
+  width: 100%;
+  margin-top: $spacing-md;
+  background: $color-bg-primary;
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.99);
+  }
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.listMain {
+  flex: 1;
+}
+
+.listName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.listMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: 1.8;
+  display: block;
+}
+
+.deleteBtn {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  margin-left: $spacing-sm;
+  flex-shrink: 0;
+
+  &:active {
+    background: rgba(245, 63, 63, 0.2);
+  }
+}
+
+.emptyList {
+  padding: $spacing-lg 0;
+  text-align: center;
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
 }
 
 .menuList {
@@ -127,6 +310,7 @@
   border-radius: $radius-lg;
   overflow: hidden;
   box-shadow: 0 2rpx 12rpx rgba(45, 90, 123, 0.06);
+  margin-bottom: $spacing-md;
 }
 
 .menuItem {
