@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, Input } from '@tarojs/components';
 import classnames from 'classnames';
 import Taro from '@tarojs/taro';
 import { useApp } from '@/store/AppContext';
+import { periodToTime } from '@/utils/schedule';
+import type { Course, Activity } from '@/types';
 import styles from './index.module.scss';
 
 const TOTAL_STEPS = 4;
@@ -10,20 +12,87 @@ const GRADES = ['大一', '大二', '大三', '大四', '研一', '研二', '研
 const PLATFORMS = ['起点中文网', '晋江文学城', '番茄小说', '纵横中文网', '其他'];
 const UPDATE_TIMES = ['18:00', '20:00', '21:00', '22:00', '23:00', '00:00'];
 const DAILY_TARGETS = [1000, 1500, 2000, 3000, 4000];
+const WEEKDAYS = [
+  { value: 1, label: '周一' },
+  { value: 2, label: '周二' },
+  { value: 3, label: '周三' },
+  { value: 4, label: '周四' },
+  { value: 5, label: '周五' },
+  { value: 6, label: '周六' },
+  { value: 7, label: '周日' },
+];
+const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8];
+const ACTIVITY_TYPES = [
+  { value: 'club', label: '社团' },
+  { value: 'commute', label: '通勤' },
+  { value: 'exam', label: '考试' },
+  { value: 'other', label: '其他' },
+];
+
+interface CourseForm {
+  name: string;
+  dayOfWeek: number;
+  startPeriod: number;
+  endPeriod: number;
+  location: string;
+  teacher: string;
+}
+
+interface ActivityForm {
+  name: string;
+  type: 'club' | 'commute' | 'exam' | 'other';
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
 
 const OnboardingPage: React.FC = () => {
-  const { profile, courses, activities, novel, updateProfile, updateNovel } = useApp();
+  const { profile, courses, activities, novel, updateProfile, updateNovel, addCourse, addActivity, deleteCourse, deleteActivity } = useApp();
   const [step, setStep] = useState(1);
 
-  const [nickname, setNickname] = useState(profile.nickname);
-  const [grade, setGrade] = useState(profile.grade);
-  const [major, setMajor] = useState(profile.major);
-  const [writingSpeed, setWritingSpeed] = useState(String(profile.writingSpeed));
+  const [nickname, setNickname] = useState(profile.nickname || '');
+  const [grade, setGrade] = useState(profile.grade || '大三');
+  const [major, setMajor] = useState(profile.major || '');
+  const [writingSpeed, setWritingSpeed] = useState(String(profile.writingSpeed || 20));
 
-  const [novelTitle, setNovelTitle] = useState(novel.title);
-  const [platform, setPlatform] = useState(novel.platform);
-  const [dailyTarget, setDailyTarget] = useState(novel.dailyTarget);
-  const [updateTime, setUpdateTime] = useState(novel.updateTime);
+  const [courseForm, setCourseForm] = useState<CourseForm>({
+    name: '',
+    dayOfWeek: 1,
+    startPeriod: 1,
+    endPeriod: 2,
+    location: '',
+    teacher: '',
+  });
+
+  const [activityForm, setActivityForm] = useState<ActivityForm>({
+    name: '',
+    type: 'club',
+    dayOfWeek: 1,
+    startTime: '08:00',
+    endTime: '09:00',
+  });
+
+  const [novelTitle, setNovelTitle] = useState(novel.title || '');
+  const [platform, setPlatform] = useState(novel.platform || '起点中文网');
+  const [dailyTarget, setDailyTarget] = useState(novel.dailyTarget || 2000);
+  const [updateTime, setUpdateTime] = useState(novel.updateTime || '22:00');
+  const [leaveRules, setLeaveRules] = useState(novel.leaveRules || '每月可请假2次，需提前1天报备');
+
+  const [activeTab, setActiveTab] = useState<'course' | 'activity'>('course');
+
+  const sortedCourses = useMemo(() => {
+    return [...courses].sort((a, b) => {
+      if (a.dayOfWeek !== b.dayOfWeek) return a.dayOfWeek - b.dayOfWeek;
+      return a.startPeriod - b.startPeriod;
+    });
+  }, [courses]);
+
+  const sortedActivities = useMemo(() => {
+    return [...activities].sort((a, b) => {
+      if (a.dayOfWeek !== b.dayOfWeek) return a.dayOfWeek - b.dayOfWeek;
+      return a.startTime.localeCompare(b.startTime);
+    });
+  }, [activities]);
 
   const handleNext = () => {
     if (step < TOTAL_STEPS) {
@@ -39,18 +108,83 @@ const OnboardingPage: React.FC = () => {
     }
   };
 
+  const handleAddCourse = () => {
+    if (!courseForm.name.trim()) {
+      Taro.showToast({ title: '请输入课程名', icon: 'none' });
+      return;
+    }
+    if (courseForm.startPeriod > courseForm.endPeriod) {
+      Taro.showToast({ title: '节次范围不正确', icon: 'none' });
+      return;
+    }
+    addCourse({
+      name: courseForm.name.trim(),
+      dayOfWeek: courseForm.dayOfWeek,
+      startPeriod: courseForm.startPeriod,
+      endPeriod: courseForm.endPeriod,
+      location: courseForm.location.trim(),
+      teacher: courseForm.teacher.trim(),
+    });
+    setCourseForm({
+      name: '',
+      dayOfWeek: 1,
+      startPeriod: 1,
+      endPeriod: 2,
+      location: '',
+      teacher: '',
+    });
+    Taro.showToast({ title: '课程已添加', icon: 'success' });
+  };
+
+  const handleAddActivity = () => {
+    if (!activityForm.name.trim()) {
+      Taro.showToast({ title: '请输入活动名称', icon: 'none' });
+      return;
+    }
+    if (activityForm.startTime >= activityForm.endTime) {
+      Taro.showToast({ title: '时间范围不正确', icon: 'none' });
+      return;
+    }
+    addActivity({
+      name: activityForm.name.trim(),
+      type: activityForm.type,
+      dayOfWeek: activityForm.dayOfWeek,
+      startTime: activityForm.startTime,
+      endTime: activityForm.endTime,
+    });
+    setActivityForm({
+      name: '',
+      type: 'club',
+      dayOfWeek: 1,
+      startTime: '08:00',
+      endTime: '09:00',
+    });
+    Taro.showToast({ title: '活动已添加', icon: 'success' });
+  };
+
+  const handleDeleteCourse = (id: string) => {
+    deleteCourse(id);
+    Taro.showToast({ title: '已删除', icon: 'none' });
+  };
+
+  const handleDeleteActivity = (id: string) => {
+    deleteActivity(id);
+    Taro.showToast({ title: '已删除', icon: 'none' });
+  };
+
   const handleFinish = () => {
     updateProfile({
       nickname: nickname || '作者',
       grade,
-      major,
-      writingSpeed: parseInt(writingSpeed || '20', 10),
+      major: major || '',
+      writingSpeed: parseInt(String(writingSpeed) || '20', 10),
     });
     updateNovel({
       title: novelTitle || '我的小说',
       platform,
       dailyTarget,
       updateTime,
+      leaveRules: leaveRules || '',
     });
     console.log('[Onboarding] 完成引导配置');
     Taro.showToast({ title: '配置完成，开始码字吧！', icon: 'success' });
@@ -105,7 +239,7 @@ const OnboardingPage: React.FC = () => {
           className={styles.formInput}
           type="number"
           placeholder="通常 15-30 字/分钟"
-          value={writingSpeed}
+          value={String(writingSpeed)}
           onInput={(e) => setWritingSpeed(e.detail.value)}
         />
       </View>
@@ -114,64 +248,274 @@ const OnboardingPage: React.FC = () => {
 
   const renderStep2 = () => (
     <>
-      <Text className={styles.stepTitle}>📚 每周课程</Text>
-      <Text className={styles.stepDesc}>我们会基于你的课程表，自动找出适合写作的空档时段</Text>
+      <Text className={styles.stepTitle}>📚 添加每周课程</Text>
+      <Text className={styles.stepDesc}>
+        添加你每周的课程安排，我们会基于你的课表自动找出写作空档</Text>
 
-      <View className={styles.demoList}>
-        {courses.slice(0, 5).map(c => (
-          <View key={c.id} className={styles.demoItem}>
-            <View className={styles.demoInfo}>
-              <Text className={styles.demoName}>{c.name}</Text>
-              <Text className={styles.demoMeta}>
-                周{c.dayOfWeek} 第{c.startPeriod}-{c.endPeriod}节 · {c.location || '待定'}
-              </Text>
-            </View>
-            <Text className={styles.demoCount}>已配置</Text>
+      <View className={styles.tabBar}>
+        <View
+          className={classnames(styles.tab, { [styles.tabActive]: activeTab === 'course' })}
+          onClick={() => setActiveTab('course')}
+        >
+          <Text>添加课程</Text>
+        </View>
+        <View
+          className={classnames(styles.tab, { [styles.tabActive]: activeTab === 'activity' })}
+          onClick={() => setActiveTab('activity')}
+        >
+          <Text>已添加 ({sortedCourses.length})</Text>
+        </View>
+      </View>
+
+      {activeTab === 'course' ? (
+        <>
+          <View className={styles.formItem}>
+            <Text className={styles.formLabel}>课程名称</Text>
+            <Input
+              className={styles.formInput}
+              placeholder="例如：古代文学"
+              value={courseForm.name}
+              onInput={(e) => setCourseForm({ ...courseForm, name: e.detail.value })}
+            />
           </View>
-        ))}
-      </View>
 
-      <View style={{ marginTop: 48, padding: 24, background: '#F5F3EF', borderRadius: 12 }}>
-        <Text style={{ fontSize: 24, color: '#86909C', lineHeight: 1.8 }}>
-          💡 示例课表已加载，正式使用时可在「我的 - 课表管理」中编辑你的真实课程
-        </Text>
-      </View>
+          <View className={styles.formItem}>
+            <Text className={styles.formLabel}>星期</Text>
+            <View className={styles.tagGroup}>
+              {WEEKDAYS.map(d => (
+                <View
+                key={d.value}
+                className={classnames(styles.tagOption, { [styles.tagOptionActive]: courseForm.dayOfWeek === d.value })}
+                onClick={() => setCourseForm({ ...courseForm, dayOfWeek: d.value })}
+              >
+                {d.label}
+              </View>
+            ))}
+            </View>
+          </View>
+
+          <View className={styles.formRow}>
+            <View className={styles.formRowItem}>
+              <Text className={styles.formLabel}>开始节次</Text>
+              <View className={styles.tagGroup}>
+                {PERIODS.map(p => (
+                  <View
+                    key={'start-' + p}
+                    className={classnames(styles.tagOption, { [styles.tagOptionActive]: courseForm.startPeriod === p })}
+                    onClick={() => setCourseForm({ ...courseForm, startPeriod: p })}
+                  >
+                    第{p}节
+                  </View>
+                ))}
+              </View>
+            </View>
+            <View className={styles.formRowItem}>
+              <Text className={styles.formLabel}>结束节次</Text>
+              <View className={styles.tagGroup}>
+                {PERIODS.map(p => (
+                  <View
+                    key={'end-' + p}
+                    className={classnames(styles.tagOption, { [styles.tagOptionActive]: courseForm.endPeriod === p })}
+                    onClick={() => setCourseForm({ ...courseForm, endPeriod: p })}
+                  >
+                    第{p}节
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+
+          <View className={styles.formItem}>
+            <Text className={styles.formLabel}>上课地点（可选）</Text>
+            <Input
+              className={styles.formInput}
+              placeholder="例如：文一301"
+              value={courseForm.location}
+              onInput={(e) => setCourseForm({ ...courseForm, location: e.detail.value })}
+            />
+          </View>
+
+          <View className={styles.formItem}>
+            <Text className={styles.formLabel}>授课老师（可选）</Text>
+            <Input
+              className={styles.formInput}
+              placeholder="例如：王教授"
+              value={courseForm.teacher}
+              onInput={(e) => setCourseForm({ ...courseForm, teacher: e.detail.value })}
+            />
+          </View>
+
+          <View className={styles.addBtn} onClick={handleAddCourse}>
+            <Text>+ 添加这门课</Text>
+          </View>
+
+          <View className={styles.quickTip}>
+            <Text>⏰ 节次时间：第1节 08:00-09:30，每节90分钟</Text>
+          </View>
+        </>
+      ) : (
+        <>
+          {sortedCourses.length > 0 ? (
+            <View className={styles.listContainer}>
+            {sortedCourses.map((c: Course) => {
+              const { start, end } = periodToTime(c.startPeriod);
+              const { end: endTimePeriod } = periodToTime(c.endPeriod);
+              return (
+                <View key={c.id} className={styles.listItem}>
+                  <View className={styles.listItemMain}>
+                    <Text className={styles.listItemName}>{c.name}</Text>
+                    <Text className={styles.listItemMeta}>
+                      {WEEKDAYS.find(w => w.value === c.dayOfWeek)?.label} 第{c.startPeriod}-{c.endPeriod}节 ({start}-{endTimePeriod})
+                    </Text>
+                    {c.location && <Text className={styles.listItemMeta}>📍 {c.location}</Text>}
+                  </View>
+                  <View className={styles.deleteBtn} onClick={() => handleDeleteCourse(c.id)}>
+                    <Text>删除</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+          ) : (
+            <View className={styles.emptyTip}>
+              <Text>还没有添加课程，切换到「添加课程」标签页添加吧~</Text>
+            </View>
+          )}
+        </>
+      )}
     </>
   );
 
   const renderStep3 = () => (
     <>
       <Text className={styles.stepTitle}>🎯 活动与通勤</Text>
-      <Text className={styles.stepDesc}>社团、考试、日常通勤这些时间也不能写作哦，让我们帮你排除掉</Text>
+      <Text className={styles.stepDesc}>
+        添加社团、考试、通勤等占用时间，这些时段不会被推荐为写作时间</Text>
 
-      <View className={styles.demoList}>
-        {activities.map(a => (
-          <View key={a.id} className={styles.demoItem}>
-            <View className={styles.demoInfo}>
-              <Text className={styles.demoName}>{a.name}</Text>
-              <Text className={styles.demoMeta}>
-                周{a.dayOfWeek} {a.startTime}-{a.endTime}
-              </Text>
+      <View className={styles.tabBar}>
+        <View
+          className={classnames(styles.tab, { [styles.tabActive]: activeTab === 'course' })}
+          onClick={() => setActiveTab('course')}
+        >
+          <Text>添加活动</Text>
+        </View>
+        <View
+          className={classnames(styles.tab, { [styles.tabActive]: activeTab === 'activity' })}
+          onClick={() => setActiveTab('activity')}
+        >
+          <Text>已添加 ({sortedActivities.length})</Text>
+        </View>
+      </View>
+
+      {activeTab === 'course' ? (
+        <>
+          <View className={styles.formItem}>
+            <Text className={styles.formLabel}>活动类型</Text>
+            <View className={styles.tagGroup}>
+              {ACTIVITY_TYPES.map(t => (
+                <View
+                  key={t.value}
+                  className={classnames(styles.tagOption, { [styles.tagOptionActive]: activityForm.type === t.value })}
+                  onClick={() => setActivityForm({ ...activityForm, type: t.value as any })}
+                >
+                  {t.label}
+                </View>
+              ))}
             </View>
-            <Text className={styles.demoCount}>
-              {a.type === 'exam' ? '考试' : a.type === 'club' ? '社团' : a.type === 'commute' ? '通勤' : '其他'}
-            </Text>
           </View>
-        ))}
-      </View>
 
-      <View style={{ marginTop: 48, padding: 24, background: '#F5F3EF', borderRadius: 12 }}>
-        <Text style={{ fontSize: 24, color: '#86909C', lineHeight: 1.8 }}>
-          💡 考试日和满课日我们会提前预警，建议提前存稿避免断更
-        </Text>
-      </View>
+          <View className={styles.formItem}>
+            <Text className={styles.formLabel}>活动名称</Text>
+            <Input
+              className={styles.formInput}
+              placeholder="例如：文学社例会"
+              value={activityForm.name}
+              onInput={(e) => setActivityForm({ ...activityForm, name: e.detail.value })}
+            />
+          </View>
+
+          <View className={styles.formItem}>
+            <Text className={styles.formLabel}>星期</Text>
+            <View className={styles.tagGroup}>
+              {WEEKDAYS.map(d => (
+                <View
+                  key={d.value}
+                  className={classnames(styles.tagOption, { [styles.tagOptionActive]: activityForm.dayOfWeek === d.value })}
+                  onClick={() => setActivityForm({ ...activityForm, dayOfWeek: d.value })}
+                >
+                  {d.label}
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <View className={styles.formRow}>
+            <View className={styles.formRowItem}>
+              <Text className={styles.formLabel}>开始时间</Text>
+              <Input
+                className={styles.formInput}
+                type="digit"
+                placeholder="08:00"
+                value={activityForm.startTime}
+                onInput={(e) => setActivityForm({ ...activityForm, startTime: e.detail.value })}
+              />
+            </View>
+            <View className={styles.formRowItem}>
+              <Text className={styles.formLabel}>结束时间</Text>
+              <Input
+                className={styles.formInput}
+                type="digit"
+                placeholder="09:00"
+                value={activityForm.endTime}
+                onInput={(e) => setActivityForm({ ...activityForm, endTime: e.detail.value })}
+              />
+            </View>
+          </View>
+
+          <View className={styles.addBtn} onClick={handleAddActivity}>
+            <Text>+ 添加这个活动</Text>
+          </View>
+
+          <View className={styles.quickTip}>
+            <Text>💡 考试日和满课日会提前预警，建议提前存稿</Text>
+          </View>
+        </>
+      ) : (
+        <>
+          {sortedActivities.length > 0 ? (
+            <View className={styles.listContainer}>
+            {sortedActivities.map((a: Activity) => (
+              <View key={a.id} className={styles.listItem}>
+                <View className={styles.listItemMain}>
+                  <Text className={styles.listItemName}>{a.name}</Text>
+                  <Text className={styles.listItemMeta}>
+                    {WEEKDAYS.find(w => w.value === a.dayOfWeek)?.label} {a.startTime}-{a.endTime}
+                  </Text>
+                  <Text className={styles.listItemMeta}>
+                    类型：{ACTIVITY_TYPES.find(t => t.value === a.type)?.label}
+                  </Text>
+                </View>
+                <View className={styles.deleteBtn} onClick={() => handleDeleteActivity(a.id)}>
+                  <Text>删除</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+          ) : (
+            <View className={styles.emptyTip}>
+              <Text>还没有添加活动，切换到「添加活动」标签页添加吧~</Text>
+            </View>
+          )}
+        </>
+      )}
     </>
   );
 
   const renderStep4 = () => (
     <>
       <Text className={styles.stepTitle}>📝 小说设置</Text>
-      <Text className={styles.stepDesc}>最后告诉我们你在连载的小说信息，帮你追踪每日进度</Text>
+      <Text className={styles.stepDesc}>
+        告诉我们你在连载的小说信息，帮你追踪每日进度</Text>
 
       <View className={styles.formItem}>
         <Text className={styles.formLabel}>小说名称</Text>
@@ -226,6 +570,16 @@ const OnboardingPage: React.FC = () => {
             </View>
           ))}
         </View>
+      </View>
+
+      <View className={styles.formItem}>
+        <Text className={styles.formLabel}>请假规则</Text>
+        <Input
+          className={styles.formInput}
+          placeholder="例如：每月可请假2次"
+          value={leaveRules}
+          onInput={(e) => setLeaveRules(e.detail.value)}
+        />
       </View>
     </>
   );

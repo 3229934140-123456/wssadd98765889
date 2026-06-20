@@ -1,7 +1,25 @@
 import React, { useEffect } from 'react';
 import { useDidShow, useDidHide } from '@tarojs/taro';
-import { AppProvider } from './store/AppContext';
+import Taro from '@tarojs/taro';
+import { AppProvider, useApp } from './store/AppContext';
 import './app.scss';
+
+function AppContent({ children }: { children: React.ReactNode }) {
+  const { profile } = useApp();
+
+  useEffect(() => {
+    if (!profile.onboardingCompleted) {
+      console.log('[App] 检测到未完成引导，跳转到引导页');
+      Taro.redirectTo({
+        url: '/pages/onboarding/index',
+      }).catch(err => {
+        console.error('[App] 跳转引导页失败:', err);
+      });
+    }
+  }, [profile.onboardingCompleted]);
+
+  return <>{children}</>;
+}
 
 function App(props) {
   useEffect(() => {
@@ -18,7 +36,7 @@ function App(props) {
 
   return (
     <AppProvider>
-      {props.children}
+      <AppContent>{props.children}</AppContent>
     </AppProvider>
   );
 }

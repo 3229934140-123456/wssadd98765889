@@ -215,3 +215,115 @@
 .btnFull {
   flex: 2;
 }
+
+.tabBar {
+  display: flex;
+  gap: $spacing-xs;
+  margin-bottom: $spacing-lg;
+  background: $color-bg-page;
+  padding: $spacing-xs;
+  border-radius: $radius-lg;
+}
+
+.tab {
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  text-align: center;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+}
+
+.tabActive {
+  background: $color-bg-card;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+  box-shadow: 0 2rpx 8rpx rgba(45, 90, 123, 0.08);
+}
+
+.addBtn {
+  @include button-reset;
+  height: $button-height-lg;
+  width: 100%;
+  background: $color-bg-primary;
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  margin-top: $spacing-md;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.99);
+  }
+}
+
+.quickTip {
+  padding: $spacing-md;
+  background: rgba(133, 193, 164, 0.1);
+  border-radius: $radius-md;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.listContainer {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.listItemMain {
+  flex: 1;
+}
+
+.listItemName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.listItemMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: 1.8;
+  display: block;
+}
+
+.deleteBtn {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  margin-left: $spacing-sm;
+  flex-shrink: 0;
+
+  &:active {
+    background: rgba(245, 63, 63, 0.2);
+  }
+}
+
+.emptyTip {
+  padding: $spacing-xl * 2 0;
+  text-align: center;
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
+  line-height: $line-height-loose;
+}

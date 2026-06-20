@@ -8,7 +8,8 @@ import EmptyState from '@/components/EmptyState';
 import styles from './index.module.scss';
 
 const WarningPage: React.FC = () => {
-  const { warnings, novel, courses, activities, writingRecords } = useApp();
+  const { getWarnings, novel, courses, activities, writingRecords } = useApp();
+  const warnings = getWarnings();
 
   const stockDays = useMemo(() => {
     const avgDaily = novel.dailyTarget;
