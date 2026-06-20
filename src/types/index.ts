@@ -47,6 +47,8 @@ export interface WritingRecord {
   chapterCompleted: boolean;
   chapterTitle?: string;
   note?: string;
+  slotId?: string;
+  slotLabel?: string;
   createdAt: string;
 }
 

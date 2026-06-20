@@ -1,9 +1,56 @@
 import dayjs from 'dayjs';
 import type { Course, Activity, WritingSlot, WarningInfo } from '@/types';
 
+const PERIOD_TIMETABLE: Array<{ start: string; end: string }> = [
+  { start: '00:00', end: '00:00' },
+  { start: '08:00', end: '09:30' },
+  { start: '09:30', end: '11:00' },
+  { start: '11:10', end: '12:40' },
+  { start: '14:00', end: '15:30' },
+  { start: '15:40', end: '17:10' },
+  { start: '17:20', end: '18:50' },
+  { start: '19:30', end: '21:00' },
+  { start: '21:10', end: '22:40' },
+];
+
+export const normalizeTime = (time: string): string => {
+  if (!time) return '00:00';
+  const trimmed = time.trim();
+  let h: number | string;
+  let m: number | string;
+  if (trimmed.includes(':')) {
+    const parts = trimmed.split(':');
+    h = parseInt(parts[0] || '0', 10);
+    m = parseInt(parts[1] || '0', 10);
+  } else if (trimmed.includes('：')) {
+    const parts = trimmed.split('：');
+    h = parseInt(parts[0] || '0', 10);
+    m = parseInt(parts[1] || '0', 10);
+  } else if (trimmed.length <= 2) {
+    h = parseInt(trimmed, 10);
+    m = 0;
+  } else {
+    const len = trimmed.length;
+    h = parseInt(trimmed.slice(0, len - 2) || '0', 10);
+    m = parseInt(trimmed.slice(-2), 10);
+  }
+  h = isNaN(h) ? 0 : h;
+  m = isNaN(m) ? 0 : m;
+  h = Math.max(0, Math.min(23, h));
+  m = Math.max(0, Math.min(59, m));
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+};
+
 const timeToMinutes = (time: string): number => {
-  const [h, m] = time.split(':').map(Number);
+  const normalized = normalizeTime(time);
+  const [h, m] = normalized.split(':').map(Number);
   return h * 60 + m;
+};
+
+const minutesToTime = (min: number): string => {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 };
 
 const isOverlap = (
@@ -18,15 +65,17 @@ const isOverlap = (
 };
 
 export const periodToTime = (period: number): { start: string; end: string } => {
-  const baseHour = 8;
-  const startMinutes = (period - 1) * 90;
-  const startHour = baseHour + Math.floor(startMinutes / 60);
-  const startMin = startMinutes % 60;
-  const endHour = startHour + 1;
-  const endMin = startMin + 30;
+  const idx = Math.max(1, Math.min(8, period));
+  return { ...PERIOD_TIMETABLE[idx] };
+};
+
+export const getCourseTimeRange = (startPeriod: number, endPeriod: number): { start: string; end: string; durationMin: number } => {
+  const s = periodToTime(startPeriod).start;
+  const e = periodToTime(endPeriod).end;
   return {
-    start: `${startHour.toString().padStart(2, '0')}:${startMin.toString().padStart(2, '0')}`,
-    end: `${endHour.toString().padStart(2, '0')}:${(endMin >= 60 ? endMin - 60 : endMin).toString().padStart(2, '0')}`,
+    start: s,
+    end: e,
+    durationMin: timeToMinutes(e) - timeToMinutes(s),
   };
 };
 
@@ -72,12 +121,12 @@ export const calculateSlots = (
     return busyRanges.some(r => isOverlap(s, e, r.start, r.end));
   };
 
-  const hasMorning = dayCourses.some(c => c.startPeriod <= 2);
-  const hasAfternoon = dayCourses.some(c => c.startPeriod >= 3 && c.startPeriod <= 6);
+  const hasMorning = dayCourses.some(c => c.startPeriod <= 3);
+  const hasAfternoon = dayCourses.some(c => c.startPeriod >= 4 && c.startPeriod <= 6);
   const hasEvening = dayCourses.some(c => c.startPeriod >= 7);
 
   if (hasMorning && hasAfternoon) {
-    const s = '12:20', e = '13:00';
+    const s = '13:00', e = '13:40';
     if (!hasConflict(s, e)) {
       slots.push({
         id: `slot-${dayOfWeek}-noon`,
@@ -94,7 +143,7 @@ export const calculateSlots = (
   }
 
   if (hasAfternoon && !hasEvening) {
-    const s = '18:00', e = '19:30';
+    const s = '18:50', e = '20:20';
     if (!hasConflict(s, e)) {
       slots.push({
         id: `slot-${dayOfWeek}-evening`,

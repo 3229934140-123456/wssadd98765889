@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import Taro from '@tarojs/taro';
 import dayjs from 'dayjs';
 import type { AppState, Course, Activity, NovelInfo, WritingRecord, WarningInfo, UserProfile, WritingSlot } from '@/types';
-import { calculateSlots, generateWarnings } from '@/utils/schedule';
+import { calculateSlots, generateWarnings, normalizeTime } from '@/utils/schedule';
 
 const STORAGE_KEY = 'writer_schedule_data_v1';
 
@@ -145,8 +145,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const updateNovel = (n: Partial<NovelInfo>) => {
-    setNovel(prev => ({ ...prev, ...n }));
-    console.log('[AppContext] 更新小说信息:', n);
+    const normalized: Partial<NovelInfo> = { ...n };
+    if (typeof n.updateTime === 'string') {
+      normalized.updateTime = normalizeTime(n.updateTime);
+    }
+    setNovel(prev => ({ ...prev, ...normalized }));
+    console.log('[AppContext] 更新小说信息:', normalized);
   };
 
   const addCourse = (course: Omit<Course, 'id'>) => {
@@ -163,12 +167,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addActivity = (activity: Omit<Activity, 'id'>) => {
-    setActivities(prev => [...prev, { ...activity, id: 'a_' + Date.now() }]);
-    console.log('[AppContext] 新增活动:', activity);
+    const normalized: Omit<Activity, 'id'> = {
+      ...activity,
+      startTime: normalizeTime(activity.startTime),
+      endTime: normalizeTime(activity.endTime),
+    };
+    setActivities(prev => [...prev, { ...normalized, id: 'a_' + Date.now() }]);
+    console.log('[AppContext] 新增活动:', normalized);
   };
 
   const updateActivity = (id: string, activity: Partial<Activity>) => {
-    setActivities(prev => prev.map(a => (a.id === id ? { ...a, ...activity } : a)));
+    const normalized: Partial<Activity> = { ...activity };
+    if (typeof activity.startTime === 'string') {
+      normalized.startTime = normalizeTime(activity.startTime);
+    }
+    if (typeof activity.endTime === 'string') {
+      normalized.endTime = normalizeTime(activity.endTime);
+    }
+    setActivities(prev => prev.map(a => (a.id === id ? { ...a, ...normalized } : a)));
   };
 
   const deleteActivity = (id: string) => {

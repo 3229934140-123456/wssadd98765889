@@ -363,3 +363,148 @@
   color: $color-text-tertiary;
   font-size: $font-size-md;
 }
+
+.listNameRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-bottom: 6rpx;
+}
+
+.listActions {
+  display: flex;
+  gap: $spacing-xs;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+}
+
+.editMiniBtn {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(45, 90, 123, 0.1);
+  color: $color-primary;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  flex-shrink: 0;
+
+  &:active {
+    background: rgba(45, 90, 123, 0.18);
+  }
+}
+
+.typeTag {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  flex-shrink: 0;
+
+  &_club {
+    background: rgba(17, 149, 119, 0.12);
+    color: #119577;
+  }
+
+  &_commute {
+    background: rgba(69, 127, 202, 0.12);
+    color: #457FCA;
+  }
+
+  &_exam {
+    background: rgba(245, 63, 63, 0.12);
+    color: $color-error;
+  }
+
+  &_other {
+    background: rgba(159, 122, 87, 0.12);
+    color: #9F7A57;
+  }
+}
+
+.addBtn {
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  border: 2rpx dashed rgba(45, 90, 123, 0.3);
+  border-radius: $radius-md;
+  text-align: center;
+  color: $color-primary;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+
+  &:active {
+    background: rgba(45, 90, 123, 0.06);
+  }
+}
+
+.formCard {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.formTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.formActions {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+}
+
+.cancelBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-md;
+  background: $color-bg-card;
+  color: $color-text-secondary;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  border: 2rpx solid $color-divider;
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.timeRangeRow {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.timeInput {
+  flex: 1;
+  min-width: 180rpx;
+  height: 64rpx;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: 0 $spacing-sm;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  border: 2rpx solid transparent;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.timeSep {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.formHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-sm;
+  width: 100%;
+  line-height: 1.6;
+}
