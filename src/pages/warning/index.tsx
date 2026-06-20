@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import dayjs from 'dayjs';
 import { useApp } from '@/store/AppContext';
-import { formatWordsCount } from '@/utils/schedule';
+import { formatWordsCount, getCourseTimeRange } from '@/utils/schedule';
 import WarningCard from '@/components/WarningCard';
 import EmptyState from '@/components/EmptyState';
 import styles from './index.module.scss';
@@ -24,13 +24,35 @@ const WarningPage: React.FC = () => {
     return [1, 2].map(offset => {
       const target = dayjs().add(offset, 'day');
       const dayOfWeek = target.day() === 0 ? 7 : target.day();
-      const dayCourses = courses.filter(c => c.dayOfWeek === dayOfWeek);
-      const dayActivities = activities.filter(a => a.dayOfWeek === dayOfWeek);
+      const dayCourses = courses.filter(c => c.dayOfWeek === dayOfWeek).sort((a, b) => a.startPeriod - b.startPeriod);
+      const dayActivities = activities.filter(a => a.dayOfWeek === dayOfWeek).sort((a, b) => a.startTime.localeCompare(b.startTime));
       const dayExams = dayActivities.filter(a => a.type === 'exam');
       const dayClubs = dayActivities.filter(a => a.type === 'club');
+      const dayCommutes = dayActivities.filter(a => a.type === 'commute');
 
       const hasWarning = warnings.some(w => w.date === target.format('YYYY-MM-DD'));
       const warningForDay = warnings.find(w => w.date === target.format('YYYY-MM-DD'));
+
+      const courseItems = dayCourses.map(c => {
+        const { start, end } = getCourseTimeRange(c.startPeriod, c.endPeriod);
+        return {
+          id: 'course_' + c.id,
+          type: 'course' as const,
+          label: c.name,
+          time: `${start}-${end}`,
+          sortKey: start,
+        };
+      });
+
+      const activityItems = dayActivities.map(a => ({
+        id: 'act_' + a.id,
+        type: a.type as 'exam' | 'club' | 'commute' | 'other',
+        label: a.name,
+        time: `${a.startTime}-${a.endTime}`,
+        sortKey: a.startTime,
+      }));
+
+      const scheduleItems = [...courseItems, ...activityItems].sort((a, b) => a.sortKey.localeCompare(b.sortKey));
 
       return {
         date: target.format('YYYY-MM-DD'),
@@ -39,8 +61,10 @@ const WarningPage: React.FC = () => {
         dayCourses,
         dayExams,
         dayClubs,
+        dayCommutes,
         hasWarning,
         warning: warningForDay,
+        scheduleItems,
       };
     });
   }, [warnings, courses, activities]);
@@ -140,13 +164,35 @@ const WarningPage: React.FC = () => {
               )}
               {day.dayClubs.length > 0 && (
                 <Text className={`${styles.previewTag} ${styles.tagClub}`}>
-                  🎯 {day.dayClubs.length} 个活动
+                  🎯 {day.dayClubs.length} 个社团
                 </Text>
               )}
-              {day.dayCourses.length === 0 && day.dayExams.length === 0 && day.dayClubs.length === 0 && (
+              {day.dayCommutes.length > 0 && (
+                <Text className={`${styles.previewTag} ${styles.tagCommute}`}>
+                  🚇 {day.dayCommutes.length} 段通勤
+                </Text>
+              )}
+              {day.scheduleItems.length === 0 && (
                 <Text className={`${styles.previewTag} ${styles.tagCourse}`}>空闲日，适合爆更 ✨</Text>
               )}
             </View>
+
+            {day.scheduleItems.length > 0 && (
+              <View className={styles.previewSchedule}>
+                {day.scheduleItems.map(item => (
+                  <View key={item.id} className={styles.previewScheduleItem}>
+                    <Text className={classnames(styles.previewItemType, styles[`previewItemType_${item.type}`])}>
+                      {item.type === 'course' ? '📚' : item.type === 'exam' ? '📝' : item.type === 'club' ? '🎯' : item.type === 'commute' ? '🚇' : '📌'}
+                    </Text>
+                    <View className={styles.previewItemBody}>
+                      <Text className={styles.previewItemLabel}>{item.label}</Text>
+                      <Text className={styles.previewItemTime}>{item.time}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
             {day.warning && (
               <Text className={styles.previewTip}>
                 <Text className={styles.tipHighlight}>写作风险：</Text>

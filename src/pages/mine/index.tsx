@@ -178,6 +178,9 @@ const MinePage: React.FC = () => {
     setShowCourseForm(false);
     setEditingCourse(null);
     setCourseForm(emptyCourse());
+    setTimeout(() => {
+      Taro.switchTab({ url: '/pages/calendar/index' });
+    }, 600);
   };
 
   const openAddActivity = () => {
@@ -214,6 +217,9 @@ const MinePage: React.FC = () => {
     setShowActivityForm(false);
     setEditingActivity(null);
     setActivityForm(emptyActivity());
+    setTimeout(() => {
+      Taro.switchTab({ url: '/pages/calendar/index' });
+    }, 600);
   };
 
   return (

@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from '@tarojs/components';
 import classnames from 'classnames';
 import dayjs from 'dayjs';
 import { useApp } from '@/store/AppContext';
-import { periodToTime, dayOfWeekNames, formatWordsCount } from '@/utils/schedule';
+import { getCourseTimeRange, dayOfWeekNames, formatWordsCount } from '@/utils/schedule';
 import ScheduleCard from '@/components/ScheduleCard';
 import WritingSlotComp from '@/components/WritingSlot';
 import EmptyState from '@/components/EmptyState';
@@ -34,12 +34,13 @@ const CalendarPage: React.FC = () => {
 
     const allItems = [
       ...dayCourses.map(c => {
-        const { start, end } = periodToTime(c.startPeriod);
+        const { start, end, durationMin } = getCourseTimeRange(c.startPeriod, c.endPeriod);
         return {
           id: c.id,
           name: c.name,
           type: 'course' as const,
           time: `${start}-${end}`,
+          durationMin,
           location: c.location,
           teacher: c.teacher,
           sortKey: start,

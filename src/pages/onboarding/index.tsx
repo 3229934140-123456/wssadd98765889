@@ -3,7 +3,7 @@ import { View, Text, Input } from '@tarojs/components';
 import classnames from 'classnames';
 import Taro from '@tarojs/taro';
 import { useApp } from '@/store/AppContext';
-import { periodToTime } from '@/utils/schedule';
+import { periodToTime, normalizeTime, getCourseTimeRange } from '@/utils/schedule';
 import type { Course, Activity } from '@/types';
 import styles from './index.module.scss';
 
@@ -143,7 +143,9 @@ const OnboardingPage: React.FC = () => {
       Taro.showToast({ title: '请输入活动名称', icon: 'none' });
       return;
     }
-    if (activityForm.startTime >= activityForm.endTime) {
+    const st = normalizeTime(activityForm.startTime);
+    const et = normalizeTime(activityForm.endTime);
+    if (st >= et) {
       Taro.showToast({ title: '时间范围不正确', icon: 'none' });
       return;
     }
@@ -151,8 +153,8 @@ const OnboardingPage: React.FC = () => {
       name: activityForm.name.trim(),
       type: activityForm.type,
       dayOfWeek: activityForm.dayOfWeek,
-      startTime: activityForm.startTime,
-      endTime: activityForm.endTime,
+      startTime: st,
+      endTime: et,
     });
     setActivityForm({
       name: '',
@@ -360,14 +362,13 @@ const OnboardingPage: React.FC = () => {
           {sortedCourses.length > 0 ? (
             <View className={styles.listContainer}>
             {sortedCourses.map((c: Course) => {
-              const { start, end } = periodToTime(c.startPeriod);
-              const { end: endTimePeriod } = periodToTime(c.endPeriod);
+              const { start, end } = getCourseTimeRange(c.startPeriod, c.endPeriod);
               return (
                 <View key={c.id} className={styles.listItem}>
                   <View className={styles.listItemMain}>
                     <Text className={styles.listItemName}>{c.name}</Text>
                     <Text className={styles.listItemMeta}>
-                      {WEEKDAYS.find(w => w.value === c.dayOfWeek)?.label} 第{c.startPeriod}-{c.endPeriod}节 ({start}-{endTimePeriod})
+                      {WEEKDAYS.find(w => w.value === c.dayOfWeek)?.label} 第{c.startPeriod}-{c.endPeriod}节 ({start}-{end})
                     </Text>
                     {c.location && <Text className={styles.listItemMeta}>📍 {c.location}</Text>}
                   </View>
@@ -456,8 +457,8 @@ const OnboardingPage: React.FC = () => {
               <Text className={styles.formLabel}>开始时间</Text>
               <Input
                 className={styles.formInput}
-                type="digit"
-                placeholder="08:00"
+                type="text"
+                placeholder="如 9:00 或 09:00"
                 value={activityForm.startTime}
                 onInput={(e) => setActivityForm({ ...activityForm, startTime: e.detail.value })}
               />
@@ -466,8 +467,8 @@ const OnboardingPage: React.FC = () => {
               <Text className={styles.formLabel}>结束时间</Text>
               <Input
                 className={styles.formInput}
-                type="digit"
-                placeholder="09:00"
+                type="text"
+                placeholder="如 20:30"
                 value={activityForm.endTime}
                 onInput={(e) => setActivityForm({ ...activityForm, endTime: e.detail.value })}
               />
@@ -479,7 +480,7 @@ const OnboardingPage: React.FC = () => {
           </View>
 
           <View className={styles.quickTip}>
-            <Text>💡 考试日和满课日会提前预警，建议提前存稿</Text>
+            <Text>💡 支持 9:00、09:00、20:30 等多种写法，保存时会自动标准化</Text>
           </View>
         </>
       ) : (
