@@ -1,0 +1,42 @@
+// ============================================
+// 主题配色变量 - 大学生网文作者 App
+// ============================================
+
+// 品牌主题色：墨蓝色（沉稳专注，适合写作场景）
+$color-primary: #2D5A7B;
+$color-primary-light: #4A7BA3;
+$color-primary-dark: #1E4560;
+
+// 辅助色
+$color-accent-orange: #E8A87C; // 暖橙 - 提醒/预警
+$color-accent-green: #85C1A4;  // 青绿 - 成功/进度完成
+$color-accent-warm: #F5E6D3;   // 米色 - 卡片背景辅助
+
+// 功能色
+$color-success: #85C1A4;
+$color-warning: #FF7D00;
+$color-error: #F53F3F;
+$color-info: #2D5A7B;
+
+// 背景色：米色温暖系，营造安静写作氛围
+$color-bg-page: #F5F3EF;
+$color-bg-card: #FFFFFF;
+$color-bg-hover: #EFEAE3;
+$color-bg-primary: linear-gradient(135deg, #2D5A7B 0%, #4A7BA3 100%);
+
+// 文本色
+$color-text-primary: #1D2129;
+$color-text-secondary: #4E5969;
+$color-text-tertiary: #86909C;
+$color-text-disabled: #C9CDD4;
+$color-text-white: #FFFFFF;
+
+// 边框色
+$color-border: #E5E6EB;
+$color-divider: #F2F3F5;
+
+// 业务专用色
+$color-slot-available: #85C1A4;   // 可用写作空档
+$color-slot-selected: #2D5A7B;    // 已选写作时段
+$color-busy: #E8A87C;             // 忙碌时段
+$color-exam: #F53F3F;             // 考试日

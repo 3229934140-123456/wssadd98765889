@@ -1,0 +1,18 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  padding: $spacing-xl * 2 0;
+  text-align: center;
+}
+
+.icon {
+  font-size: 100rpx;
+  opacity: 0.25;
+  margin-bottom: $spacing-md;
+}
+
+.text {
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
+  line-height: $line-height-loose;
+}

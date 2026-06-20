@@ -1,0 +1,181 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  padding: 0 $page-padding;
+  padding-bottom: 140rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.profileCard {
+  background: $color-bg-primary;
+  border-radius: $radius-lg;
+  padding: $spacing-xl $spacing-lg;
+  color: $color-text-white;
+  margin: $spacing-lg 0;
+  box-shadow: 0 4rpx 20rpx rgba(45, 90, 123, 0.2);
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: $radius-round;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56rpx;
+  flex-shrink: 0;
+}
+
+.profileInfo {
+  flex: 1;
+}
+
+.nickname {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  margin-bottom: 8rpx;
+}
+
+.bio {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+.section {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionTitle {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-md;
+  padding-left: $spacing-xs;
+}
+
+.novelCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: 0 2rpx 12rpx rgba(45, 90, 123, 0.06);
+}
+
+.novelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.novelTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.platformBadge {
+  padding: 4rpx 14rpx;
+  background: rgba(45, 90, 123, 0.1);
+  color: $color-primary;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.novelStats {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.statItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-sm 0;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.statValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin-bottom: 4rpx;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.novelMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.menuList {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(45, 90, 123, 0.06);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+  transition: background $transition-fast;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.menuIcon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-md;
+  background: rgba(45, 90, 123, 0.1);
+  color: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.menuContent {
+  flex: 1;
+}
+
+.menuTitle {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.menuDesc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.menuArrow {
+  color: $color-text-tertiary;
+  font-size: $font-size-md;
+}

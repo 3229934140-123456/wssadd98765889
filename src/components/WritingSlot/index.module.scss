@@ -1,0 +1,106 @@
+@use '@/styles/variables.scss' as *;
+
+.slotCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-sm;
+  border: 2rpx solid $color-border;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6rpx;
+    background: $color-slot-available;
+    opacity: 0.5;
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.selected {
+  border-color: $color-primary;
+  background: linear-gradient(135deg, rgba(45, 90, 123, 0.05) 0%, rgba(45, 90, 123, 0.02) 100%);
+
+  &::before {
+    background: $color-primary;
+    opacity: 1;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.label {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.time {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+}
+
+.duration {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.words {
+  font-size: $font-size-sm;
+  color: $color-slot-available;
+  font-weight: $font-weight-medium;
+
+  .num {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    margin-right: 4rpx;
+  }
+}
+
+.selected .words {
+  color: $color-primary;
+}
+
+.checkbox {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: $radius-round;
+  border: 2rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+}
+
+.checked {
+  background: $color-primary;
+  border-color: $color-primary;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+}

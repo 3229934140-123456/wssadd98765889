@@ -1,0 +1,217 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #2D5A7B 0%, #F5F3EF 50%);
+  padding: $spacing-xl $page-padding $spacing-xl;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  text-align: center;
+  padding: $spacing-xl 0 $spacing-lg;
+  color: $color-text-white;
+}
+
+.logo {
+  font-size: 80rpx;
+  margin-bottom: $spacing-md;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-xs;
+}
+
+.subtitle {
+  font-size: $font-size-sm;
+  opacity: 0.85;
+}
+
+.progressBar {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.progressDot {
+  width: 48rpx;
+  height: 8rpx;
+  border-radius: $radius-round;
+  background: rgba(255, 255, 255, 0.3);
+  transition: all $transition-base;
+}
+
+.progressDotActive {
+  background: $color-text-white;
+  width: 72rpx;
+}
+
+.stepCard {
+  flex: 1;
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: 0 8rpx 32rpx rgba(45, 90, 123, 0.15);
+  margin-bottom: $spacing-lg;
+}
+
+.stepTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.stepDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-xl;
+  line-height: $line-height-loose;
+}
+
+.formItem {
+  margin-bottom: $spacing-lg;
+}
+
+.formLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  font-weight: $font-weight-medium;
+}
+
+.formInput {
+  width: 100%;
+  height: 88rpx;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.formRow {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.formRowItem {
+  flex: 1;
+}
+
+.tagGroup {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.tagOption {
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  border: 2rpx solid transparent;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.tagOptionActive {
+  background: rgba(45, 90, 123, 0.1);
+  color: $color-primary;
+  border-color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.demoList {
+  margin-top: $spacing-md;
+}
+
+.demoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.demoInfo {
+  flex: 1;
+}
+
+.demoName {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  margin-bottom: 4rpx;
+}
+
+.demoMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.demoCount {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  background: rgba(45, 90, 123, 0.1);
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+}
+
+.bottomBar {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.btnSecondary {
+  @include button-reset;
+  height: $button-height-lg;
+  flex: 1;
+  background: $color-accent-warm;
+  color: $color-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.99);
+  }
+}
+
+.btnPrimary {
+  @include button-reset;
+  height: $button-height-lg;
+  flex: 1;
+  background: $color-bg-primary;
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.99);
+  }
+}
+
+.btnFull {
+  flex: 2;
+}

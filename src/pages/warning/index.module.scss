@@ -1,0 +1,179 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  padding: 0 $page-padding;
+  padding-bottom: 140rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.statusCard {
+  background: $color-bg-primary;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  color: $color-text-white;
+  margin: $spacing-lg 0;
+  box-shadow: 0 4rpx 20rpx rgba(45, 90, 123, 0.2);
+}
+
+.statusHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.statusTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+}
+
+.statusBadge {
+  padding: 6rpx 20rpx;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  background: rgba(133, 193, 164, 0.3);
+}
+
+.statusBody {
+  display: flex;
+  gap: $spacing-xl;
+}
+
+.statusItem {
+  flex: 1;
+}
+
+.statusLabel {
+  font-size: $font-size-xs;
+  opacity: 0.8;
+  margin-bottom: 4rpx;
+}
+
+.statusValue {
+  font-size: 40rpx;
+  font-weight: $font-weight-bold;
+
+  .unit {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-normal;
+    opacity: 0.8;
+    margin-left: 4rpx;
+  }
+}
+
+.section {
+  margin-bottom: $spacing-xl;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.previewCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-lg;
+  margin-bottom: $spacing-sm;
+  box-shadow: 0 2rpx 8rpx rgba(45, 90, 123, 0.04);
+}
+
+.previewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.previewDay {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.previewDate {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.previewTags {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.previewTag {
+  padding: 4rpx 14rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+}
+
+.tagCourse {
+  background: rgba(45, 90, 123, 0.1);
+  color: $color-primary;
+}
+
+.tagExam {
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+}
+
+.tagClub {
+  background: rgba(232, 168, 124, 0.15);
+  color: $color-accent-orange;
+}
+
+.previewTip {
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1rpx solid $color-divider;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.tipHighlight {
+  color: $color-error;
+  font-weight: $font-weight-medium;
+}
+
+.suggestionBox {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  background: linear-gradient(135deg, rgba(232, 168, 124, 0.08) 0%, rgba(232, 168, 124, 0.02) 100%);
+  border-radius: $radius-md;
+  border-left: 4rpx solid $color-accent-orange;
+}
+
+.suggestionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-accent-orange;
+  margin-bottom: $spacing-xs;
+}
+
+.suggestionContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+
+  .num {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+}

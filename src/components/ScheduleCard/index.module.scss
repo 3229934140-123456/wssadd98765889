@@ -1,0 +1,87 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-sm;
+  box-shadow: 0 2rpx 8rpx rgba(45, 90, 123, 0.06);
+  border-left: 6rpx solid $color-primary;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.examCard {
+  border-left-color: $color-error;
+}
+
+.clubCard {
+  border-left-color: $color-accent-orange;
+}
+
+.commuteCard {
+  border-left-color: $color-text-tertiary;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+}
+
+.name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-sm;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.courseTag {
+  background: rgba(45, 90, 123, 0.1);
+  color: $color-primary;
+}
+
+.examTag {
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+}
+
+.clubTag {
+  background: rgba(232, 168, 124, 0.15);
+  color: $color-accent-orange;
+}
+
+.commuteTag {
+  background: rgba(134, 144, 156, 0.1);
+  color: $color-text-tertiary;
+}
+
+.meta {
+  display: flex;
+  gap: $spacing-md;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
